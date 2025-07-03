@@ -41,8 +41,8 @@ export function createStore<StateType, StateMethodType extends object>(
             throw 'Store method cannot be named "internals". Its reserved for internal store methods.';
           }
 
-          (acc as any)[key] = (...args: any[]) => {
-            fn(...args);
+          (acc as any)[key] = async (...args: any[]) => {
+            await fn(...args);
             notifyNow();
           };
 
