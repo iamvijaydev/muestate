@@ -50,7 +50,6 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:code": "rollup -c",
-    "build:demo": "tsup",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types",
     "build": "npm run clean && npm run build:code && npm run build:types"
   },
@@ -62,6 +61,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/react": "^19.1.4",
+    "prettier": "3.6.2",
     "react": "^19.1.0",
     "rimraf": "^6.0.1",
     "rollup": "^4.41.0",
