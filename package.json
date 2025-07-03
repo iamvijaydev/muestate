@@ -1,0 +1,76 @@
+{
+  "name": "muestate",
+  "version": "0.1.0",
+  "description": "A React library for creating stores with mutable state and shared with context API.",
+  "type": "module",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./utils/useDefinedContext": {
+      "import": "./dist/esm/utils/useDefinedContext.js",
+      "require": "./dist/cjs/utils/useDefinedContext.js",
+      "types": "./dist/types/utils/useDefinedContext.d.ts"
+    },
+    "./utils/useMutableState": {
+      "import": "./dist/esm/utils/useMutableState.js",
+      "require": "./dist/cjs/utils/useMutableState.js",
+      "types": "./dist/types/utils/useMutableState.d.ts"
+    },
+    "./utils/useMutableSubscription": {
+      "import": "./dist/esm/utils/useMutableSubscription.js",
+      "require": "./dist/cjs/utils/useMutableSubscription.js",
+      "types": "./dist/types/utils/useMutableSubscription.d.ts"
+    },
+    "./utils/useReactiveState": {
+      "import": "./dist/esm/utils/useReactiveState.js",
+      "require": "./dist/cjs/utils/useReactiveState.js",
+      "types": "./dist/types/utils/useReactiveState.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md",
+    "scripts"
+  ],
+  "keywords": [
+    "react",
+    "context",
+    "mutable",
+    "store"
+  ],
+  "author": "Vijay Dev",
+  "license": "ISC",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build:code": "rollup -c",
+    "build:demo": "tsup",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types",
+    "build": "npm run clean && npm run build:code && npm run build:types"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/react": "^19.1.4",
+    "react": "^19.1.0",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.41.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "tslib": "^2.8.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": "20.x || >=22.x"
+  }
+}
