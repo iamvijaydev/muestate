@@ -47,6 +47,10 @@
   ],
   "author": "Vijay Dev",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamvijaydev/muestate"
+  },
   "scripts": {
     "clean": "rimraf dist",
     "build:code": "rollup -c",
