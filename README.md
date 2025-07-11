@@ -5,34 +5,34 @@ A React utility for creating application stores with mutable state and shared vi
 ## Quick start
 Let's create a quick to-do application. We start with the store for the todo.
 ```ts
-// store.ts
-import { createStore, type SetStateFn } from 'muestate'
+import { v4 as uuid } from "uuid";
+import { createStore, type SetStateFn } from "muestate";
 
 export type TodoItem = {
   title: string;
   isCompleted: boolean;
-}
+};
 // Since the state is mutable, we are not constrained to arrays
 export type TodoState = Map<string, TodoItem>;
 
-const makeMethods = (setState: SetStateFn<TodoState>) => {
+const makeMethods = (setState: SetStateFn<TodoState>) => ({
   addTodo(title: string) {
-    setState(todos => {
-      todos.add(uuid(), { title, isCompleted: false })
-      return todo
-    })
-  }
+    setState((todos) => {
+      todos.set(uuid(), { title, isCompleted: false });
+      return todos;
+    });
+  },
   toggleCompleted(id: string) {
-    setState(todos => {
-      const todo = todos.get(id)
+    setState((todos) => {
+      const todo = todos.get(id);
       if (todo) {
-        todo.isCompleted = !todo.isCompleted
+        todo.isCompleted = !todo.isCompleted;
       }
-      return todos
-    })
-  }
-}
-const initialTodo: TodoState = new Map()
+      return todos;
+    });
+  },
+});
+const initialTodo: TodoState = new Map();
 
 export const [
   // access the store methods (`addTodo` and `toggleCompleted`)
@@ -40,67 +40,96 @@ export const [
   // access the state as a reactive value
   useTodoState,
   // provider to share the store via React Context
-  TodoProvider
-] = createStore<TodoState>(initialTodo, makeMethods)
+  TodoProvider,
+] = createStore(initialTodo, makeMethods);
 ```
 
 Time to build the UI for the todo. Firstly, the todo form:
 ```tsx
 export const AddTodoForm = () => {
-  const store = useTodoStore()
+  const store = useTodoStore();
   ...
-  const onSubmit = () => {
-    store.addTodo(title)
-  }
-  ...
-}
+  const onSubmit = (e: any) => {
+    store.addTodo(title);
+    ...
+  };
+
+  return (
+    <form onSubmit={onSubmit}>
+      <input
+        onChange={(e) => {
+          setTitle(e.target.value);
+        }}
+      />
+      <button>Add</button>
+    </form>
+  );
+};
 ```
 
 Next up, todo listing. Here we are strategically splitting the component in a way to avoid unnecessary re-renders:
 ```tsx
 export const TodoList = () => {
-  const todoIdList = useTodoState(
+  const todoIdList = useTodoState<string[]>(
     // state getter: convert the todo Map to an array of ids.
-    (state) => Array.from(state.keys())
+    (state) => Array.from(state.keys()),
     // state comparator: avoid re-render when toggling `isCompleted`.
-    (prev, curr) => prev.some((id, i) => !Object.is(id, curr[i]))
-  )
-  ...
-  return (<div>
-    {todoIdList.map(id => <TodoItem key={id} id={id) />
-  </div>)
-}
+    (prev, curr) => {
+      return (
+        prev.length !== curr.length ||
+        prev.some((id, i) => !Object.is(id, curr[i]))
+      );
+    }
+  );
+
+  return (
+    <div>
+      {todoIdList.map((id) => (
+        <TodoItem key={id} id={id} />
+      ))}
+    </div>
+  );
+};
 ```
 The state selector returns an array. Even if all the IDs are the same and in order, the outer array wrapper is re-created. This will cause re-renders. To improve over the default state comparator of `Object.is`, we provide our state comparator. 
 ```tsx
 export const TodoItem = ({ id }) => {
-  const store = useTodoStore()
-  // The title never changes. We don't need a reactive value.
-  const title = store.getState().get(id)?.title
-  // The completed state can change, hence the reactive value.
-  const isCompleted = useTodoState<boolean>(state => state.get(id)?.isCompleted)
+  const store = useTodoStore();
 
-  return (<div>
-    <input
-      checked={isCompleted}
-      onChange={() => store.toggleCompleted(id)}
-      ...
-    />
-    <span>{title}</span>
-    ...
-  </div>)
-}
+  // The title never changes. We don't need a reactive value.
+  const title = store.internals.getState().get(id)?.title;
+
+  // The completed state can change, hence the reactive value.
+  const isCompleted = useTodoState<boolean>((state) =>
+    Boolean(state.get(id)?.isCompleted)
+  );
+
+  return (
+    <div>
+      <input
+        checked={isCompleted}
+        onChange={() => store.toggleCompleted(id)}
+      />
+      <span>{title}</span>
+    </div>
+  );
+};
+
 ```
 
 Let's throw in a status footer as well
 ```tsx
 export const TodoStatus = () => {
   // We use a computed state value
-  const status = useTodoState(state =>
-    `${Array.from(state.values()).filter(item => item.isCompleted).length} of ${state.size} completed`)
-  ...
-  return <span>{status}</span> // For e.g.: 2 or 10 completed
-}
+  const status = useTodoState(
+    (state) =>
+      `${
+        Array.from(state.values()).filter((item) => item.isCompleted).length
+      } of ${state.size} completed`
+  );
+
+  return <span>{status}</span>; // For e.g.: 2 of 10 completed
+};
 ```
 
 Finally, let's wrap everything inside `TodoProvider` to ensure the Hooks work properly:
@@ -116,6 +145,8 @@ export const TodoApp = () => (
 )
 ```
 
+[![Edit go-to-to-do](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/wc6ctc)
+
 ## How to install
 ```bash
 npm install muestate --save
@@ -127,7 +158,7 @@ pnpm add muestate
 
 ## Understand the utility
 - Check out the extensive examples
-- Check out the Muestate hooks and how to use them is various situations
+- Check out the Muestate hooks and how to use them in various situations
 - Deep dive on how Muestate was derived
 
 
