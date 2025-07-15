@@ -1,429 +1,171 @@
 # Muestate
-A React library for creating stores with mutable state and shared via context API.
 
-In an app with complex data structure or sofisticated UI with numerious DOM node, this library provides means to control which part of app should render and when. Fine tune performance of any desired DOM node, small or big, via internal core utilities.
-
-At Muestate's core:
-1. State is mutable `useRef`, app wont re-render on state changes
-2. State changes can be subscribed to made reactive using `useState`
-3. If required, a sub-set of the state can be subscribed and made reactive
-4. State and methods are encapsulated as a singleton store
-5. Store is initialized and accessible via Context
+A React utility for creating application stores with mutable state and shared via the React Context API. Updating the state doesn't re-render the UI by default. In desired components, use the reactive hook to access complete, partial, or computed state.
 
 ## Quick start
-
-### Install Muestate
-```bash
-# Ensure peer dependency "react" is installed
-npm install muestate --save
-```
-
-### Create an user store
+Let's create a quick to-do application. We start with the store for the todo.
 ```ts
-import { type SetStateFn, createStore } from 'muestate'
+import { v4 as uuid } from "uuid";
+import { createStore, type SetStateFn } from "muestate";
 
-export type UserState = {
-  name: string
-  state: string
-  sport: string
-}
+export type TodoItem = {
+  title: string;
+  isCompleted: boolean;
+};
+// Since the state is mutable, we are not constrained to arrays
+export type TodoState = Map<string, TodoItem>;
 
-const initialState: UserState = {
-  name: 'Vijay',
-  state: 'KL, IND',
-  sport: 'swimming',
-}
-
-const getMethods = (setState: SetStateFn<UserState>) => ({
-  setItem(key: keyof UserState, value: string = "") {
-    setState((prev) => ({ ...prev, [key]: value }))
+const makeMethods = (setState: SetStateFn<TodoState>) => ({
+  addTodo(title: string) {
+    setState((todos) => {
+      todos.set(uuid(), { title, isCompleted: false });
+      return todos;
+    });
   },
-  clearItem(key: keyof UserState) {
-    setState((prev) => ({ ...prev, [key]: "" }))
+  toggleCompleted(id: string) {
+    setState((todos) => {
+      const todo = todos.get(id);
+      if (todo) {
+        todo.isCompleted = !todo.isCompleted;
+      }
+      return todos;
+    });
   },
-  resetAll() {
-    setState({ ...initialState })
-  },
-})
+});
+const initialTodo: TodoState = new Map();
 
 export const [
-  useUserStore,
-  useUserState,
-  UserProvider
-] = createStore(initialState, getMethods)
+  // access the store methods (`addTodo` and `toggleCompleted`)
+  useTodoStore,
+  // access the state as a reactive value
+  useTodoState,
+  // provider to share the store via React Context
+  TodoProvider,
+] = createStore(initialTodo, makeMethods);
 ```
 
-### Wrap with `UserProvider`
-Wrap the consumers with the provider. This will initialize the store. Since the store is a singleton object that never changes, the `UserProvider` will never re-render.
+Time to build the UI for the todo. Firstly, the todo form:
 ```tsx
-export const SharedParentComponent = () => (
-  <...>
-    <UserProvider>
-      <ConsumerComponentA />
-      <...>
-        <ConsumerComponentB />
-      </...>
-    </UserProvider>
-  <...>
-)
-```
-
-### Consume the non-reactive store
-Any component that only consumes `useUserStore` will not re-render on state changes. The returned `store` is a singleton object that never changes.
-```tsx
-export const ActionsComponent = () => {
-  const store = useUserStore()
-
-  const onUpdate = (e: ChangeEvent<HTMLInputElement>) => {
-    store.setItem(e.target.name as keyof UserState, e.target.value)
-  }
-
-  const onClear = (e: ChangeEvent<HTMLButtonElement>) => {
-    store.clearItem(e.target.name as keyof UserState)
-  }
-
+export const AddTodoForm = () => {
+  const store = useTodoStore();
   ...
-}
-```
+  const onSubmit = (e: any) => {
+    store.addTodo(title);
+    ...
+  };
 
-### Consume the reactive state
-Any component that consumes `useUserState` will re-render on state changes.
-```tsx
-export const InteractiveComponent = () => {
-  const state = useUserState()
-
-  if (!state.name.trim().length) {
-    return <p>Introduce yourself.</p>
-  }
-
-  let introduction = `Hey, I'm ${state.name}`
-
-  introduction += state.address.trim().length ? ` from ${state.address}.` : '.'
-  introduction += state.sport.trim().length > 0 ? ` My favourite sport is ${state.sport}.` : ''
-
-  return <p>{introduction}</p>
-}
-```
-As the state grows with the application growth, `useUserState` can be replaced with `useReactiveState` to make small portion or selective part of the large state, reactive.
-
-## Understanding state in Muestate
-Muestate is open to all state types. It can be primitives like `string`, `number`, `boolean`, `bigint`, or `symbols`:
-```ts
-// store.ts
-createStore<number>(0, methods)
-createStore<string>('', methods)
-```
-However, using Muestate with primitive datatypes may be an overkill. The same can also be achieved using `useState` and state sharing via props.
-
-You can use Muestate to manage larger state objects that can be shared across various non-sibling React components:
-```tsx
-// store.ts
-createStore<ProductFilterState>(productFilter, methods)
-
-// Filters.tsx
-const store = useProductFilterStore()
-const state = useProductFilterState()
-
-// store is a singleton object with methods defined with `createStore`
-// useProductFilterStore() will return the same object everywhere
-store.updateSearch('query') 
-
-// useProductFilterState() returns a `useState` cloned instance (`structuredClone`) of internal mutable state
-// any component using state will re-render to all state changes
-<input value={state.search} />
-```
-### Selective reactivity
-Where Muestate really shines is when you have very large state object. Any tiny state changes should not trigger re-render of the entire app. You selectively make small parts of app reactive:
-```ts
-// store.ts
-createStore<DashboardWidgetState>(dashboardWidgetState, methods)
-
-// FilterActions.tsx
-// this component will *not* re-render as it's not using state
-const store = useDashboardWidgetStore()
-...
-<button onClick={store.restoreLayout()} />
-
-// GraphWidget.tsx
-const store = useDashboardWidgetStore()
-
-// this widget intance will only re-render if its height is changed
-// `useReactiveState` takes the mutable store and a state selector function
-// only the returned section becomes reactive (useState)
-const height = useReactiveState(
-  store,
-  (state: DashboardWidgetState) => state.widgets.find(widget => widget.id === prop.id)?.height
-)
-
-// You can also attach a comparator function to ensure
-// re-render only happens when it's really required
-const position = useReactiveState(
-  store,
-  (state: DashboardWidgetState) => state.widgets.find(widget => widget.id === prop.id)?.position,
-  (
-    prev?: DashboardWidgetState,
-    curr?: DashboardWidgetState
-  ) => prev?.x !== curr?.x || prev?.y !== curr?.y
-)
-
-// of-course you can club multiple items into one
-const [width, height] = useReactiveState(
-  store,
-  (state: DashboardWidgetState) => {
-    const widget = state.widgets.get(prop.id) // widgets is now a Map
-
-    if (widget) return [widget.width, widget.height]
-
-    return [0, 0]
-  }
-)
-// Note: As an array is returned from selector, on state updates, the data inside the array may be the same
-// but the outer array is not the same, thus causing re-renders. Explore if comparator function is required.
-```
-
-## Understanding methods in Muestate
-The `createStore` expects a `getMethod` function which should use the `setState` function to set the state changes. There are a couple of ways store methods can update the state. `getMethod` function will recieve two arguments to manage state updates:
-1. `setState` function: update the internal mutable state
-2. `notifyNow` function: for async state update notify state update to subscribers (more on that later)
-
-### Return full state
-```ts
-const getMethods = (setState: SetStateFn<UserState>) => ({
-  resetUser() {
-    setState({ ...initialState })
-  },
-})
-```
-
-### Return partial state
-```ts
-const getMethods = (setState: SetStateFn<FilterState>) => ({
-  setQuery(value: string = "") {
-    setState({ query: value })
-  },
-})
-```
-
-### Return callback function
-```ts
-const getMethods = (setState: SetStateFn<ProductListState>) => ({
-  startFetch({ pageNo, perPage }: FetchArgs = {}) {
-    setState((prev) => ({
-      ...prev,
-      pageNo: pageNo ?? prev.pageNo,
-      perPage: perPage ?? prev.perPage,
-      isPending: true,
-      isError: false,
-    }))
-  },
-  // actual fetching happens outside in a command/hook
-  cancelFetch() {
-    setState({ isPending: false, })
-  }
-  finishFetch(isError: boolean, res?: ApiRes) {
-    setState({
-      isPending: false,
-      isError,
-      data: res?.data ?? [],
-      totalCount: res?.data ?? 0,
-    })
-  },
-})
-```
-
-### Manage async action within method
-```ts
-const getMethods = (setState: SetStateFn<ProductListState>, notifyNow: NotifyNowFn) => ({
-  async fetchProducts({ pageNo, perPage }: FetchArgs = {}) {
-    setState((prev) => ({
-      ...prev,
-      isPending: true,
-      isError: false,
-      pageNo: pageNo ?? prev.pageNo,
-      perPage: perPage ?? prev.perPage,
-    }))
-    notifyNow() // notify the state change subscription; forcing a re-render, show the loading UI
-
-    try {
-      const { data, totalCount } = await fetch(...)
-
-      setState({
-        data,
-        totalCount,
-        isPending: false,
-        isError: false,
-      })
-    } catch (error) {
-      setState({
-        data: [],
-        totalCount: 0,
-        isPending: false,
-        isError: true,
-      })
-    }
-  }
-})
-```
-
-## Philisophy
-React has all the necessary features to create an excellant store sharable via Context. We do not need any external library. In fact this library uses the same features, and abstract away the boilerplate, as we'll see below.
-
-### Build a React Context store
-Let's start with a very basic store.
-```ts
-// store.ts
-export type UserState = {
-  name: string
-  state: string
-  sport: string
-}
-
-const initialState: UserState = {
-  name: 'Vijay',
-  state: 'KL, IND',
-  sport: 'swimming',
-}
-
-export const useUserStore = (initialState: UserState) => {
-  const [state, setState] = useState<UserState>(initialState)
-
-  const setItem = (key: keyof UserState, value: string = "") {
-    setState((prev) => ({ ...prev, [key]: value }))
-  }
-
-  const clearItem = (key: keyof UserState) {
-    setState((prev) => ({ ...prev, [key]: "" }))
-  }
-
-  return { state, setItem, clearItem }
-}
-```
-This store can then be used in a component.
-```tsx
-const Component = () => {
-  const { state, setItem } = useUserStore({
-    name: 'Vijay',
-    state: 'KL, IND',
-    sport: 'swimming',
-  })
-
-  // store.state.name
-  // store.setItem(...)
-}
-```
-As the application grows there are more than one component that needs to access the same store instance. Let's share the store via Context.
-```tsx
-// context.ts
-const UserContext = createContext<UseUserStoreType | undefined>(
-  undefined
-)
-```
-Now let's intitialize everything.
-```tsx
-// Parent.tsx
-const Parent = () => {
-  const store = useUserStore()
-
-  const value = useMemo(() => store, [store])
-
-  return <Context.Provider value={value}>{props.children}</Context.Provider>
-}
-
-const ComponentA = () => {
-  const store = useContext(UserContext)
-
-  if (context === null || context === undefined) {
-    throw new Error(
-      "Cannot use 'UserContext' without wrapping the parent with \"UserContext Provider\""
-    )
-  }
-
-  // store.state.name
-  // store.setItem(...)
-}
-
-const ComponentB = () => {
-  const store = useContext(UserContext)
-
-  if (context === null || context === undefined) {
-    throw new Error(
-      "Cannot use 'UserContext' without wrapping the parent with \"UserContext Provider\""
-    )
-  }
-
-  // store.state.name
-  // store.setItem(...)
-}
-```
-Suffice to say, a lot of boilerplate and repeated code. Let's reduce some of the boilerplate.
-
-### Build a React Context store v2
-```tsx
-// state.ts
-export type UserState = {
-  name: string
-  state: string
-  sport: string
-}
-export const getInitialState = (): UserState => ({
-  name: 'Vijay',
-  state: 'KL, IND',
-  sport: 'swimming',
-})
-
-// store.ts
-export const useUserStore = () => {
-  const [state, setState] = useState<UserState>(getInitialState())
-
-  const setItem = (key: keyof UserState, value: string = "") {
-    setState((prev) => ({ ...prev, [key]: value }))
-  }
-
-  const clearItem = (key: keyof UserState) {
-    setState((prev) => ({ ...prev, [key]: "" }))
-  }
-
-  return { state, setItem, clearItem }
-}
-
-// context.ts
-const UserContext = createContext<UseUserStoreType | undefined>(
-  undefined
-)
-const useUserContext: (): UserContext => {
-  return useDefinedContext(Context)
-}
-
-// Provider.tsx
-export const UserProvider = (props: PropsWithChildren): JSX.Element => {
-  const store = useUserStore()
-  const value = useMemo(() => store, [store])
-
-  return <Context.Provider value={value}>{props.children}</Context.Provider>
-}
-```
-`useDefinedContext` basically wraps the throw error case when the Context is accessed without the provider. `useUserContext` takes away one additional step to access the store via Context.
-
-Now the Parent and Childen can be simpler. They do not need to import everything or call functions with args.
-```tsx
-// Parent.tsx
-const Parent = () => {
   return (
-    <UserProvider>
-      ...
-    </UserProvider>
-  )
-}
-const ComponentA = () => {
-  const store = useUserContext()
-  // store.state.name
-  // store.setItem(...)
-}
-const ComponentB = () => {
-  const store = useUserContext()
-  // store.state.name
-  // store.setItem(...)
-}
+    <form onSubmit={onSubmit}>
+      <input
+        onChange={(e) => {
+          setTitle(e.target.value);
+        }}
+      />
+      <button>Add</button>
+    </form>
+  );
+};
 ```
 
-### So what's wrong with the store?
+Next up, todo listing. Here we are strategically splitting the component in a way to avoid unnecessary re-renders:
+```tsx
+export const TodoList = () => {
+  const todoIdList = useTodoState<string[]>(
+    // state getter: convert the todo Map to an array of ids.
+    (state) => Array.from(state.keys()),
+    // state comparator: avoid re-render when toggling `isCompleted`.
+    (prev, curr) => {
+      return (
+        prev.length !== curr.length ||
+        prev.some((id, i) => !Object.is(id, curr[i]))
+      );
+    }
+  );
+
+  return (
+    <div>
+      {todoIdList.map((id) => (
+        <TodoItem key={id} id={id} />
+      ))}
+    </div>
+  );
+};
+```
+The state selector returns an array. Even if all the IDs are the same and in order, the outer array wrapper is re-created. This will cause re-renders. To improve over the default state comparator of `Object.is`, we provide our state comparator. 
+```tsx
+export const TodoItem = ({ id }) => {
+  const store = useTodoStore();
+
+  // The title never changes. We don't need a reactive value.
+  const title = store.internals.getState().get(id)?.title;
+
+  // The completed state can change, hence the reactive value.
+  const isCompleted = useTodoState<boolean>((state) =>
+    Boolean(state.get(id)?.isCompleted)
+  );
+
+  return (
+    <div>
+      <input
+        checked={isCompleted}
+        onChange={() => store.toggleCompleted(id)}
+      />
+      <span>{title}</span>
+    </div>
+  );
+};
+
+```
+
+Let's throw in a status footer as well
+```tsx
+export const TodoStatus = () => {
+  // We use a computed state value
+  const status = useTodoState(
+    (state) =>
+      `${
+        Array.from(state.values()).filter((item) => item.isCompleted).length
+      } of ${state.size} completed`
+  );
+
+  return <span>{status}</span>; // For e.g.: 2 of 10 completed
+};
+```
+
+Finally, let's wrap everything inside `TodoProvider` to ensure the Hooks work properly:
+```tsx
+export const TodoApp = () => (
+  // There is no state here. There is no prop-drilling.
+  // Everything is clean. Sub-component only consumes the required items.
+  <TodoProvider>
+    <AddTodoForm />
+    <TodoList />
+    <TodoStatus />
+  </TodoProvider>
+)
+```
+
+[![Edit go-to-to-do](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/wc6ctc)
+
+## How to install
+```bash
+npm install muestate --save
+# or
+yarn add muestate
+# or
+pnpm add muestate
+```
+
+## Understand the utility
+- Check out the extensive examples
+- Check out the Muestate hooks and how to use them in various situations
+- Deep dive on how Muestate was derived
+
+
+
+
+
+
+
+
+
