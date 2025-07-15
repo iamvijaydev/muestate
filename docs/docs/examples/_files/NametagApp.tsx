@@ -69,7 +69,7 @@ export const [
 ] = createStore<
   string,
   ReturnType<typeof getMethods>
->('', makeMethods)`,
+>('Vijay', makeMethods)`,
             active: true,
           },
           "/App.tsx": `import { NametagProvider } from './store.ts'
@@ -105,6 +105,7 @@ export const NametagForm = () => {
           onChange={onChange}
           placeholder="Enter your name"
           className={textboxGrp.input}
+          autoComplete="off"
         />
         <button
           disabled={!Boolean(name?.trim())}

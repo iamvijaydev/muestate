@@ -36,7 +36,18 @@ export const textboxGrp = {
   iconBtnEnd: 'border-r-0 border-neutral-400/0 rounded-r-sm',
   btnIcon: 'text-white'
 }
-textboxGrp.iconBtnEnd = textboxGrp.iconBtn + ' ' + textboxGrp.iconBtnEnd`,
+textboxGrp.iconBtnEnd = textboxGrp.iconBtn + ' ' + textboxGrp.iconBtnEnd
+
+export const menu = {
+  container: 'mt-6 mx-auto max-w-2xl bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
+  content: 'grid grid-flow-row auto-rows-max gap-6 p-6',
+  contentFooter: 'border-t-1 border-neutral-300 flex items-center justify-between gap-6 px-6 py-3',
+  grid: 'grid grid-cols-[80px_1fr_200px] items-start gap-3',
+  category: 'font-mono text-xs uppercase leading-3 bg-indigo-100 text-indigo-400 p-1 rounded',
+  actionBtn: 'text-neutral-900 hover:text-indigo-600 cursor-pointer',
+  count: 'text-md text-neutral-600',
+  bulkActionBtn: 'flex flex-nowrap items-center px-2 py-1 gap-2 rounded-sm cursor-pointer bg-neutral-400/70 hover:bg-indigo-400 focus:bg-indigo-400 outline-indigo-400 focus:outline-1 text-md text-neutral-600 hover:text-white focus:text-white disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-auto transition',
+}`,
           },
           "/index.js": {
             hidden: true,
@@ -76,18 +87,38 @@ export const [
 ] = createStore<
   number,
   ReturnType<typeof makeMethods>
->(0, makeMethods)`,
+>(2, makeMethods)`,
             active: true,
           },
           "/App.tsx": `import { CounterProvider } from './store'
 import { CounterForm } from './CounterForm'
-import { app } from './styles'
+import { app, menu } from './styles'
+import { IndianRupee } from 'lucide-react'
 
 export default function CounterApp() {
   return (
-    <div className={app.container}>
+    <div className={app.container1}>
       <CounterProvider>
         <CounterForm />
+        <div className={menu.container}>
+          <div className={menu.content}>
+            <div className={menu.grid}>
+              <div className="bg-neutral-200 rounded-md h-[60px] w-[80px]" />
+              <div>
+                <div className="bg-neutral-200 rounded-sm mt-2 h-[15px] w-[80%]" />
+                <div className="bg-neutral-200 rounded-sm mt-2 h-[10px] w-[50%]" />
+              </div>
+              <div className="bg-neutral-200 rounded-md h-[40px] w-[200px]" />
+            </div>
+          </div>
+          <div className={menu.contentFooter}>
+            <span className={menu.count}>Total: 0</span>
+            <button className={menu.bulkActionBtn}>
+              <IndianRupee size={16} />
+              Checkout
+            </button>
+          </div>
+        </div>
       </CounterProvider>
     </div>
   )

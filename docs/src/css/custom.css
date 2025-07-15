@@ -33,7 +33,8 @@
   @media (min-width: 997px) {
     .docs-doc-id-examples\/counter .container,
     .docs-doc-id-examples\/nametag .container,
-    .docs-doc-id-examples\/todo .container {
+    .docs-doc-id-examples\/todo .container,
+    .docs-doc-id-examples\/filters .container {
       max-width: 100% !important;
     }
   }
@@ -43,7 +44,8 @@
   @media (min-width: 997px) {
     .docs-doc-id-examples\/counter .container .row .col,
     .docs-doc-id-examples\/nametag .container .row .col,
-    .docs-doc-id-examples\/todo .container .row .col {
+    .docs-doc-id-examples\/todo .container .row .col,
+    .docs-doc-id-examples\/filters .container .row .col {
       max-width: 100% !important;
     }
   }

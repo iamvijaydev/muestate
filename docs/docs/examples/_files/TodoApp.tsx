@@ -38,9 +38,9 @@ export const textboxGrp = {
 textboxGrp.iconBtnEnd = textboxGrp.iconBtn + ' ' + textboxGrp.iconBtnEnd
 
 export const todoForm = {
-  container: 'mx-auto max-w-2xl grid grid-cols-[1fr_40px] gap-4 p-6 bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
+  container: 'mx-auto max-w-2xl grid grid-cols-[1fr_minmax(120px,15%)] gap-4 p-6 bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
   grid: 'grid grid-cols-[minmax(110px,15%)_1fr] gap-4',
-  addTodo: 'absolute inset-x-0 bottom-0 p-2 rounded-sm cursor-pointer disabled:cursor-none disabled:bg-neutral-300 bg-neutral-400/70 hover:bg-indigo-400 focus:bg-indigo-400 outline-indigo-400 focus:outline-1 text-neutral-600 hover:text-white focus:text-white grid place-items-center transition',
+  addTodo: 'absolute inset-x-0 bottom-0 rounded-sm cursor-pointer disabled:cursor-none disabled:bg-neutral-300 bg-neutral-400/70 hover:bg-indigo-400 focus:bg-indigo-400 outline-indigo-400 focus:outline-1 text-md text-neutral-600 hover:text-white focus:text-white leading-0 flex flex-nowrap items-center p-3 gap-2 transition',
 }
   
 export const categoryTabs = {
@@ -52,11 +52,15 @@ export const categoryTabs = {
   
 export const todoItems = {
   emptyContainer: 'mt-6 mx-auto max-w-2xl grid place-item-center p-10 bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
-  container: 'mt-6 mx-auto max-w-2xl grid grid-flow-row auto-rows-max gap-6 p-6 bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
+  emptyContent: 'text-neutral-500 text-center',
+  container: 'mt-6 mx-auto max-w-2xl bg-neutral-100 border border-neutral-300 shadow-xs rounded-md',
+  content: 'grid grid-flow-row auto-rows-max gap-6 p-6',
+  contentFooter: 'border-t-1 border-neutral-300 flex items-center justify-between gap-6 px-6 py-3',
   grid: 'grid grid-cols-[20px_1fr_max-content_20px] items-start gap-3',
   category: 'font-mono text-xs uppercase leading-3 bg-indigo-100 text-indigo-400 p-1 rounded',
   actionBtn: 'text-neutral-900 hover:text-indigo-600 cursor-pointer',
-  bulkActionBtn: 'px-2 py-1 rounded-sm cursor-pointer bg-neutral-400/70 hover:bg-indigo-400 focus:bg-indigo-400 outline-indigo-400 focus:outline-1 text-xs text-neutral-600 hover:text-white focus:text-white disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-auto grid place-content-center gap-2 transition',
+  count: 'text-md text-neutral-600',
+  bulkActionBtn: 'flex flex-nowrap items-center px-2 py-1 gap-2 rounded-sm cursor-pointer bg-neutral-400/70 hover:bg-indigo-400 focus:bg-indigo-400 outline-indigo-400 focus:outline-1 text-md text-neutral-600 hover:text-white focus:text-white disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-auto transition',
 }`,
           },
           "/index.js": {
@@ -89,13 +93,62 @@ export type TodoState = {
 
 export const initialTodoState: TodoState = {
   todoList: new Map([
-    ['1', { id: "1", createdAt: 1750214733220, title: 'Buy groceries', category: 'Shopping', isCompleted: false, isArchived: false, }],
-    ['2', { id: "2", createdAt: 1750214733240, title: 'Complete project report', category: 'Work', isCompleted: false, isArchived: false, }],
-    ['3', { id: "3", createdAt: 1750214733260, title: 'Call mom', category: 'Personal', isCompleted: true, isArchived: false, }],
-    ['4', { id: "4", createdAt: 1750214733280, title: 'Read a book', category: 'Hobby', isCompleted: false, isArchived: false, }],
-    ['5', { id: "5", createdAt: 1750214733300, title: 'Plan vacation', category: 'Personal', isCompleted: false, isArchived: false, }],
-    ['6', { id: "6", createdAt: 1750214733320, title: 'Buy new shoes', category: 'Shopping', isCompleted: false, isArchived: false, }],
-    ['7', { id: "7", createdAt: 1750214733340, title: 'Finish coding assignment', category: 'Work', isCompleted: true, isArchived: false, }],
+    ['1', {
+      id: "1",
+      createdAt: 1750214733220,
+      title: 'Buy groceries',
+      category: 'Shopping',
+      isCompleted: false,
+      isArchived: false
+    }],
+    ['2', {
+      id: "2",
+      createdAt: 1750214733240,
+      title: 'Complete project report',
+      category: 'Work',
+      isCompleted: false,
+      isArchived: false
+    }],
+    ['3', {
+      id: "3",
+      createdAt: 1750214733260,
+      title: 'Call mom',
+      category: 'Personal',
+      isCompleted: true,
+      isArchived: false
+    }],
+    ['4', {
+      id: "4",
+      createdAt: 1750214733280,
+      title: 'Read a book',
+      category: 'Hobby',
+      isCompleted: false,
+      isArchived: false
+    }],
+    ['5', {
+      id: "5",
+      createdAt: 1750214733300,
+      title: 'Plan vacation',
+      category: 'Personal',
+      isCompleted: false,
+      isArchived: false
+    }],
+    ['6', {
+      id: "6",
+      createdAt: 1750214733320,
+      title: 'Buy new shoes',
+      category: 'Shopping',
+      isCompleted: false,
+      isArchived: false
+    }],
+    ['7', {
+      id: "7",
+      createdAt: 1750214733340,
+      title: 'Finish coding assignment',
+      category: 'Work',
+      isCompleted: true,
+      isArchived: false
+    }],
   ]),
   categoryList: new Set(['All', 'Work', 'Personal', 'Shopping', 'Hobby']),
   selectedCategory: 'All',
@@ -324,6 +377,7 @@ export const TodoForm = () => {
           title="Add todo"
           aria-label="Add todo"
         >
+          <span>Add Todo</span>
           <SendHorizontal size={16} strokeWidth={2} />
         </button>
       </div>
@@ -432,7 +486,11 @@ export const TodoList = () => {
   if (todoList.length === 0) {
     return (
       <div className={todoItems.emptyContainer}>
-        <p className='text-neutral-500'>{selectedCategory === 'All' ? 'Add a new todo.' : 'No todos under "' + selectedCategory + '"'}</p>
+        <p className={todoItems.emptyContent}>
+          {selectedCategory === 'All'
+            ? 'Add a new todo.'
+            : 'No todos under "' + selectedCategory + '"'}
+        </p>
       </div>
     )
   }
@@ -441,13 +499,11 @@ export const TodoList = () => {
   const archivedCount = todoList.filter(todo => todo.isArchived).length
   const hasCompleted = selectedCategory !== 'Archived' && completedCount > 0
   const hasArchived = selectedCategory === 'Archived' && archivedCount > 0
-
   const completedLabel = completedCount + '/' + todoList.length + ' completed'
-  const archiveCompletedLabel = 'Archive completed' + (completedCount > 0 ? ' (' + completedCount + ')' : '')
-  const clearArchivedLabel = 'Clear archived' + (archivedCount > 0 ? ' (' + archivedCount + ')' : '')
 
   return (
     <div className={todoItems.container}>
+      <div className={todoItems.content}>
       {
         todoList.map((todo) => (
           <div className={todoItems.grid} key={todo.title}>
@@ -487,31 +543,30 @@ export const TodoList = () => {
           </div>
         ))
       }
-      <div>{completedLabel}</div>
-      {hasCompleted ? (
-        <button
-          onClick={store.archiveCompleted}
-          type="button"
-          className={todoItems.bulkActionBtn}
-        >
-          <ArchiveRestore size={16} strokeWidth={2} />
-          <span>
-            {archiveCompletedLabel}
-          </span>
-        </button>
-      ) : null}
-      {hasArchived ? (
-        <button
-          onClick={store.clearArchived}
-          type="button"
-          className={todoItems.bulkActionBtn}
-        >
-          <ArchiveRestore size={16} strokeWidth={2} />
-          <span>
-            {clearArchivedLabel}
-          </span>
-        </button>
-      ) : null}
+        </div>
+        <div className={todoItems.contentFooter}>
+          <div className={todoItems.count}>{completedLabel}</div>
+          {hasCompleted ? (
+            <button
+              onClick={store.archiveCompleted}
+              type="button"
+              className={todoItems.bulkActionBtn}
+            >
+              <ArchiveRestore size={16} strokeWidth={2} />
+              <span>Archive completed</span>
+            </button>
+          ) : null}
+          {hasArchived ? (
+            <button
+              onClick={store.clearArchived}
+              type="button"
+              className={todoItems.bulkActionBtn}
+            >
+              <ArchiveRestore size={16} strokeWidth={2} />
+              <span>Clear archived</span>
+            </button>
+          ) : null}
+       </div>
     </div>
   )
 }`,
