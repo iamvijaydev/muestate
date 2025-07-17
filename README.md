@@ -5,34 +5,34 @@ A React utility for creating application stores with mutable state and shared vi
 ## Quick start
 Let's create a quick to-do application. We start with the store for the todo.
 ```ts
-import { v4 as uuid } from "uuid";
-import { createStore, type SetStateFn } from "muestate";
+import { v4 as uuid } from "uuid"
+import { createStore, type SetStateFn } from "muestate"
 
 export type TodoItem = {
-  title: string;
-  isCompleted: boolean;
+  title: string
+  isCompleted: boolean
 };
 // Since the state is mutable, we are not constrained to arrays
-export type TodoState = Map<string, TodoItem>;
+export type TodoState = Map<string, TodoItem>
 
 const makeMethods = (setState: SetStateFn<TodoState>) => ({
   addTodo(title: string) {
     setState((todos) => {
-      todos.set(uuid(), { title, isCompleted: false });
-      return todos;
+      todos.set(uuid(), { title, isCompleted: false })
+      return todos
     });
   },
   toggleCompleted(id: string) {
     setState((todos) => {
-      const todo = todos.get(id);
+      const todo = todos.get(id)
       if (todo) {
-        todo.isCompleted = !todo.isCompleted;
+        todo.isCompleted = !todo.isCompleted
       }
-      return todos;
+      return todos
     });
   },
-});
-const initialTodo: TodoState = new Map();
+})
+const initialTodo: TodoState = new Map()
 
 export const [
   // access the store methods (`addTodo` and `toggleCompleted`)
@@ -41,30 +41,28 @@ export const [
   useTodoState,
   // provider to share the store via React Context
   TodoProvider,
-] = createStore(initialTodo, makeMethods);
+] = createStore(initialTodo, makeMethods)
 ```
 
 Time to build the UI for the todo. Firstly, the todo form:
 ```tsx
 export const AddTodoForm = () => {
-  const store = useTodoStore();
+  const store = useTodoStore()
   ...
   const onSubmit = (e: any) => {
-    store.addTodo(title);
+    store.addTodo(title)
     ...
-  };
+  }
 
   return (
     <form onSubmit={onSubmit}>
       <input
-        onChange={(e) => {
-          setTitle(e.target.value);
-        }}
+        onChange={(e) => setTitle(e.target.value)}
       />
-      <button>Add</button>
+      ...
     </form>
-  );
-};
+  )
+}
 ```
 
 Next up, todo listing. Here we are strategically splitting the component in a way to avoid unnecessary re-renders:
@@ -78,9 +76,9 @@ export const TodoList = () => {
       return (
         prev.length !== curr.length ||
         prev.some((id, i) => !Object.is(id, curr[i]))
-      );
+      )
     }
-  );
+  )
 
   return (
     <div>
@@ -88,21 +86,19 @@ export const TodoList = () => {
         <TodoItem key={id} id={id} />
       ))}
     </div>
-  );
-};
+  )
+}
 ```
 The state selector returns an array. Even if all the IDs are the same and in order, the outer array wrapper is re-created. This will cause re-renders. To improve over the default state comparator of `Object.is`, we provide our state comparator. 
 ```tsx
 export const TodoItem = ({ id }) => {
-  const store = useTodoStore();
-
+  const store = useTodoStore()
   // The title never changes. We don't need a reactive value.
-  const title = store.internals.getState().get(id)?.title;
-
+  const title = store.internals.getState().get(id)?.title
   // The completed state can change, hence the reactive value.
-  const isCompleted = useTodoState<boolean>((state) =>
-    Boolean(state.get(id)?.isCompleted)
-  );
+  const isCompleted = useTodoState<boolean>(
+    (state) => Boolean(state.get(id)?.isCompleted)
+  )
 
   return (
     <div>
@@ -112,8 +108,8 @@ export const TodoItem = ({ id }) => {
       />
       <span>{title}</span>
     </div>
-  );
-};
+  )
+}
 
 ```
 
@@ -121,22 +117,24 @@ Let's throw in a status footer as well
 ```tsx
 export const TodoStatus = () => {
   // We use a computed state value
-  const status = useTodoState(
+  const status = useTodoState<string>(
     (state) =>
       `${
-        Array.from(state.values()).filter((item) => item.isCompleted).length
+        Array.from(state.values())
+          .filter((todo) => todo.isCompleted)
+          .length
       } of ${state.size} completed`
-  );
+  )
 
   return <span>{status}</span>; // For e.g.: 2 of 10 completed
-};
+}
 ```
 
 Finally, let's wrap everything inside `TodoProvider` to ensure the Hooks work properly:
 ```tsx
 export const TodoApp = () => (
   // There is no state here. There is no prop-drilling.
-  // Everything is clean. Sub-component only consumes the required items.
+  // Everything is clean. Sub-component only consumes the required data.
   <TodoProvider>
     <AddTodoForm />
     <TodoList />

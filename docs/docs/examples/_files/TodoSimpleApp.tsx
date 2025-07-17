@@ -17,7 +17,6 @@ export const TodoApp = () => {
         customSetup={{
           dependencies: {
             "lucide-react": "latest",
-            uuid: "latest",
             muestate: "latest",
           },
           entry: "/index.js",
@@ -77,181 +76,56 @@ root.render(
   </React.StrictMode>
 );`,
           },
-          "/state.ts": `export type Todo = {
-  id: string
-  createdAt: number
-  title: string
-  category?: string
-  isCompleted: boolean
-  isArchived: boolean
-}
-
-export type TodoState = {
-  todoList: Map<string, Todo>
-  categoryList: Set<string>
-  selectedCategory: string
-}
-
-export const initialTodoState: TodoState = {
-  todoList: new Map([
-    ['2a834336-7e67-4bfb-8f61-3736afbe2484', {
-      id: "2a834336-7e67-4bfb-8f61-3736afbe2484",
-      createdAt: 1750214733220,
-      title: 'Buy groceries',
-      category: 'Shopping',
-      isCompleted: false,
-      isArchived: false
-    }],
-    ['24215d29-cdaa-4120-ae48-48c81a2082b7', {
-      id: "24215d29-cdaa-4120-ae48-48c81a2082b7",
-      createdAt: 1750214733240,
-      title: 'Complete project report',
-      category: 'Work',
-      isCompleted: false,
-      isArchived: false
-    }],
-    ['c4fd6586-9cda-4075-b6f8-ac7bdf8bd572', {
-      id: "c4fd6586-9cda-4075-b6f8-ac7bdf8bd572",
-      createdAt: 1750214733260,
-      title: 'Call mom',
-      category: 'Personal',
-      isCompleted: true,
-      isArchived: false
-    }],
-    ['cbd545dc-f4b7-41f4-830b-4e7282b99ad3', {
-      id: "cbd545dc-f4b7-41f4-830b-4e7282b99ad3",
-      createdAt: 1750214733280,
-      title: 'Read a book',
-      category: 'Hobby',
-      isCompleted: false,
-      isArchived: false
-    }],
-    ['aced9617-c634-48d4-9bc1-50e7ba5e8e5d', {
-      id: "aced9617-c634-48d4-9bc1-50e7ba5e8e5d",
-      createdAt: 1750214733300,
-      title: 'Plan vacation',
-      category: 'Personal',
-      isCompleted: false,
-      isArchived: false
-    }],
-    ['2478cec0-3784-49e8-a2db-cf015fac3f3e', {
-      id: "2478cec0-3784-49e8-a2db-cf015fac3f3e",
-      createdAt: 1750214733320,
-      title: 'Buy new shoes',
-      category: 'Shopping',
-      isCompleted: false,
-      isArchived: false
-    }],
-    ['6e16c9ec-33c4-4a91-aaca-a429e35faaa9', {
-      id: "6e16c9ec-33c4-4a91-aaca-a429e35faaa9",
-      createdAt: 1750214733340,
-      title: 'Finish coding assignment',
-      category: 'Work',
-      isCompleted: true,
-      isArchived: false
-    }],
-  ]),
-  categoryList: new Set(['All', 'Work', 'Personal', 'Shopping', 'Hobby']),
-  selectedCategory: 'All',
-}`,
           "/store.ts": {
-            code: `import { v4 as uuid } from 'uuid'
-import { createStore, type SetStateFn } from 'muestate'
+            code: `import { createStore, type SetStateFn } from 'muestate'
 import { type TodoState, initialTodoState } from './state'
-    
+
+export type TodoItem = {
+  title: string
+  isCompleted: boolean
+}
+// Since the state is mutable, we are not constrained to arrays
+export type TodoState = Map<string, TodoItem>
+
 const makeMethods = (setState: SetStateFn<TodoState>) => ({
-  addTodo: (title: string, category: string) => {
-    const id = uuid()
-    setState((state) => {
-      state.todoList.set(id, {
-        id,
-        createdAt: Date.now(),
-        title,
-        category,
-        isCompleted: false,
-        isArchived: false
-      });
-      state.selectedCategory = 'All'
-      return state
+  addTodo(title: string) {
+    setState((todos) => {
+      todos.set(uuid(), { title, isCompleted: false })
+      return todos;
     })
   },
-  addCategory: (category: string) => {
-    setState((state) => {
-      state.categoryList.add(category)
-      return state
-    })
-  },
-  toggleTodo: (id: string) => {
-    setState((state) => {
-      const todo = state.todoList.get(id)
+  toggleCompleted(id: string) {
+    setState((todos) => {
+      const todo = todos.get(id)
       if (todo) {
         todo.isCompleted = !todo.isCompleted
       }
-      return state
+      return todos
     })
   },
-  removeTodo: (id: string) => {
-    setState((state) => {
-      const isCompleted = state.todoList.get(id).isCompleted
-      if (isCompleted) {
-        state.todoList.delete(id)
-      }
-      return state
-    })
-  },
-  setSelectedCategory: (category: string) => {
-    setState((state) => {
-      state.selectedCategory = category
-      return state
-    })
-  },
-  archiveCompleted: () => {
-    setState((state) => {
-      for (const todo of state.todoList.values()) {
-        const isAllCategory = state.selectedCategory === 'All' && todo.isCompleted;
-        const isOtherCategory = state.selectedCategory !== 'All' && todo.isCompleted && todo.category === state.selectedCategory;
+})
 
-        if (isAllCategory || isOtherCategory) {
-          todo.isArchived = true;
-        }
-      }
-      return state;
-    });
-  },
-  unarchiveTodo: (id: string) => {
-    setState((state) => {
-      const todo = state.todoList.get(id);
-      if (todo) {
-        todo.isCompleted = false;
-        todo.isArchived = false;
-      }
-
-      const hasOtherArchived = Array.from(state.todoList.values()).some(todo => todo.isArchived);
-      if (!hasOtherArchived) {
-        state.selectedCategory = 'All';
-      }
-
-      return state;
-    });
-  },
-  clearArchived: () => {
-    setState((state) => {
-      for (const [id, todo] of state.todoList.entries()) {
-        if (todo.isArchived) {
-          state.todoList.delete(id);
-        }
-      }
-      state.selectedCategory = 'All';
-      return state;
-    });
-  }
-});
-
+const initialTodo: TodoState = new Map([
+  ["72b65e9d-c834-4f6d-a505-3065d5c500fa",
+    { title: "Learn Muestate", isCompleted: false }],
+  ["d44856ff-4736-4039-b695-c8d694aa4420",
+    { title: "Build a Todo App", isCompleted: false }],
+  ["ffee5d5b-a91e-4fb7-a041-ec94dded1b69",
+    { title: "Share with the community", isCompleted: false }],
+  ["7497ca34-6ebb-4ab9-aecf-9b0e4af190b0",
+    { title: "Engage with users", isCompleted: false }],
+  ["55793ab2-2783-472b-b0fa-08dbfdf0d240",
+    { title: "Get feedback", isCompleted: false }],
+])
+    
 export const [
+  // access the store methods ('addTodo' and 'toggleCompleted')
   useTodoStore,
+  // access the state as a reactive value
   useTodoState,
-  TodoProvider
-] = createStore(initialTodoState, makeMethods)`,
+  // provider to share the store via React Context
+  TodoProvider,
+] = createStore(initialTodo, makeMethods)`,
             active: true,
           },
           "/App.tsx": `import { TodoProvider } from './store'
@@ -264,9 +138,9 @@ export default function TodoApp() {
   return (
     <div className={app.container}>
       <TodoProvider>
-        <TodoForm />
-        <CategoryTab />
+        <AddTodoForm />
         <TodoList />
+        <TodoStatus />
       </TodoProvider>
     </div>
   )
