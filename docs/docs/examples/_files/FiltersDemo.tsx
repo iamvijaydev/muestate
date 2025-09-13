@@ -9,7 +9,7 @@ import { Footer } from './counterApp/Footer';
 import { SkeletonCore } from './counterApp/SkeletonCore';
 import { Skeleton } from './counterApp/Skeleton';
 
-export const CounterDemo = () => {
+export const FiltersDemo = () => {
   return (
     <div>
       <Sandpack

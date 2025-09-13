@@ -3,7 +3,7 @@ import { SkeletonCore } from './SkeletonCore'
 import { skeleton } from './styles'
 
 export const Skeleton = (props) => (
-  <SkeletonCore imgCls={props.imgCls}>
+  <SkeletonCore>
     <div className={skeleton.btn} />
   </SkeletonCore>
 )

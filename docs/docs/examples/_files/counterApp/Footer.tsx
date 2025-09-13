@@ -1,16 +1,17 @@
 export const Footer = `
 import { Send } from 'lucide-react'
-import { useCounterState } from './store'
-import { footer } from './styles'
+import { useCounterState, useCounterStore } from './store'
+import { footer, common } from './styles'
 
 export const Footer = () => {
   const count = useCounterState()
+  const store = useCounterStore()
 
   return (
     <div className={footer.box + ' ' + (count > 0 ? footer.show : footer.hide)}>
       <span className={footer.count}>{'Total: ₹ ' + count * 110}</span>
-      <button className={footer.btn}>
-        <Send absoluteStrokeWidth />
+      <button onClick={store.reset} className={common.btn}>
+        <Send />
         Order Now
       </button>
     </div>

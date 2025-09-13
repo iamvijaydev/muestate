@@ -11,10 +11,11 @@ export const App = () => {
       <div className={common.card}>
         <CounterProvider>
           <div className={app.results}>
-            <Skeleton imgCls="bg-red-50" />
-            <Skeleton imgCls="bg-orange-50" />
+            <div className={common.maskTB} />
+            <Skeleton />
+            <Skeleton />
             <Form />
-            <Skeleton imgCls="bg-yellow-50" />
+            <Skeleton />
           </div>
           <Footer />
         </CounterProvider>
