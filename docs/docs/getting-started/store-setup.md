@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Setup
+# Store setup
 
 ## Install Muestate
 ```bash npm2yarn

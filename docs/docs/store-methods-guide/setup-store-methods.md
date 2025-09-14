@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Store methods
+# Setup store methods
 Muestate store methods are created using a factory function. This factory function recieves the `setState` and `notifyNow` function as arguments. We will explore `notifyNow` in async store methods. The `setState` allows state updates in multiple ways.
 
 ```ts
