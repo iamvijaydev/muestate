@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
-title: Muestate
+title: Introduction
+slug: /
 description: A React library for creating stores with mutable state and shared via context API.
 ---
 

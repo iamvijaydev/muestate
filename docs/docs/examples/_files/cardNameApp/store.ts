@@ -1,7 +1,7 @@
 export const store = `
 import { createStore, type SetStateFn } from 'muestate'
             
-const makeMethods = (setState: SetStateFn<string>) => ({
+const getMethods = (setState: SetStateFn<string>) => ({
   update(name: string) {
     setState(name)
   },
@@ -16,6 +16,6 @@ export const [
   CardNameProvider
 ] = createStore<
   string,
-  ReturnType<typeof makeMethods>
->('Vijay Dev', makeMethods)
+  ReturnType<typeof getMethods>
+>('Vijay Dev', getMethods)
 `

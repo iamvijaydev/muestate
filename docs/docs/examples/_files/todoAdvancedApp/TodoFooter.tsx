@@ -39,6 +39,13 @@ export const TodoFooter = () => {
           <div className={todoItems.count}>
             <span>{total + ' item(s) in '}</span><strong>{category}</strong>
           </div>
+          {category === 'Archived' ? (
+            <button
+              onClick={store.removeArchived}
+              type="button"
+              className={common.btn}
+            >Remove archived</button>
+          ) : null}
         </div>
       </div>
     )
@@ -50,14 +57,7 @@ export const TodoFooter = () => {
         <div className={todoItems.count}>
           <span>{completed + '/' + total + ' completed in '}</span> <strong>{category}</strong>
         </div>
-        {category === 'Archived' && archived > 0 ? (
-          <button
-            onClick={store.removeArchived}
-            type="button"
-            className={common.btn}
-          >Remove archived</button>
-        ) : null}
-        {category !== 'Archived' && completed !== archived && completed > 0 ? (
+        {completed !== archived && completed > 0 ? (
           <button
             onClick={store.archiveCompleted}
             type="button"

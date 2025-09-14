@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { createStore, type SetStateFn } from 'muestate'
 import { type TodoState, initialTodoState, getCurrentTodos } from './state'
     
-const makeMethods = (setState: SetStateFn<TodoState>) => ({
+const getMethods = (setState: SetStateFn<TodoState>) => ({
   addTodo: (title: string, category: string) => {
     const id = uuid()
 
@@ -108,5 +108,5 @@ export const [
   useTodoStore,
   useTodoState,
   TodoProvider
-] = createStore(initialTodoState, makeMethods)
+] = createStore(initialTodoState, getMethods)
 `

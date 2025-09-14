@@ -1,7 +1,7 @@
 export const store = `
 import { createStore, type SetStateFn } from 'muestate'
             
-const makeMethods = (setState: SetStateFn<number>) => ({
+const getMethods = (setState: SetStateFn<number>) => ({
   increment() {
     setState((prev) => prev + 1)
   },
@@ -22,6 +22,6 @@ export const [
   CounterProvider
 ] = createStore<
   number,
-  ReturnType<typeof makeMethods>
->(2, makeMethods)
+  ReturnType<typeof getMethods>
+>(2, getMethods)
 `

@@ -9,7 +9,7 @@ export const TodoFooter = () => {
 
   const [total, completed] = useTodoState<Todo[]>(
     (state: TodoState) => {
-      const todos = Array.from(state.todoList.values());
+      const todos = Array.from(state.values());
 
       return [
         todos.length,

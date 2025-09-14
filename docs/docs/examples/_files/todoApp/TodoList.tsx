@@ -10,7 +10,7 @@ export const TodoList = () => {
 
   const todoList = useTodoState<Todo[]>(
     (state: TodoState) => {
-      return Array.from(state.todoList.values())
+      return Array.from(state.values())
         .sort((a, b) => {
           if (a.isCompleted !== b.isCompleted) {
             return a.isCompleted ? 1 : -1;

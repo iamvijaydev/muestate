@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid'
 import { createStore, type SetStateFn } from 'muestate'
 import { type TodoState, initialTodoState } from './state'
     
-const makeMethods = (setState: SetStateFn<TodoState>) => ({
+const getMethods = (setState: SetStateFn<TodoState>) => ({
   addTodo: (title: string) => {
     const id = uuid()
     setState((state) => {
-      state.todoList.set(id, {
+      state.set(id, {
         id,
         createdAt: Date.now(),
         title,
@@ -18,7 +18,7 @@ const makeMethods = (setState: SetStateFn<TodoState>) => ({
   },
   toggleTodo: (id: string) => {
     setState((state) => {
-      const todo = state.todoList.get(id)
+      const todo = state.get(id)
       if (todo) {
         todo.isCompleted = !todo.isCompleted
       }
@@ -27,15 +27,15 @@ const makeMethods = (setState: SetStateFn<TodoState>) => ({
   },
   removeTodo: (id: string) => {
     setState((state) => {
-      state.todoList.delete(id)
+      state.delete(id)
       return state
     })
   },
   removeCompleted: () => {
     setState((state) => {
-      for (let [id, todo] of state.todoList) {
+      for (let [id, todo] of state) {
         if (todo.isCompleted) {
-          state.todoList.delete(id)
+          state.delete(id)
         }
       }
       return state;
@@ -47,5 +47,5 @@ export const [
   useTodoStore,
   useTodoState,
   TodoProvider
-] = createStore(initialTodoState, makeMethods)
+] = createStore(initialTodoState, getMethods)
 `
