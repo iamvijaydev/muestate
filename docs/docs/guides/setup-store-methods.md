@@ -8,14 +8,20 @@ Muestate store methods are created using a factory function. This factory functi
 ```ts
 import type { SetStateFn, NotifyNowFn } from 'muestate'
 
-const getMethods = (setState: SetStateFn<GuestDetailsType>, notifyNow: NotifyNowFn) => {
+const getMethods = (
+  setState: SetStateFn<GuestDetailsType>,
+  notifyNow: NotifyNowFn
+) => {
   return {
     // full state update
     resetDetails() {
       setState({ ...defaultGuest })
     },
     // partial state update
-    updateName(firstName: string, lastName?: string) {
+    updateName(
+      firstName: string,
+      lastName?: string
+    ) {
       setState({ name: `${firstName}${lastName ? ' ' + lastName : ''}` });
     },
     // callback

@@ -1,3 +1,9 @@
+---
+sidebar_position: 1
+---
+
+# React Context store
+
 ## Philisophy
 React has all the necessary features to create an excellant store sharable via Context. We do not need any external library. In fact this library uses the same features, and abstract away the boilerplate, as we'll see below.
 

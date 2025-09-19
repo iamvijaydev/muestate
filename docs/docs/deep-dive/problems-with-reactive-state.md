@@ -2,4 +2,4 @@
 sidebar_position: 2
 ---
 
-# Calling store methods
+# Problems with reactive state
