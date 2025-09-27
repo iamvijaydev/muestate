@@ -22,13 +22,13 @@ const getMethods = (
       firstName: string,
       lastName?: string
     ) {
-      setState({ name: `${firstName}${lastName ? ' ' + lastName : ''}` });
+      setState({ name: `${firstName}${lastName ? ' ' + lastName : ''}` })
     },
     // callback
     upgradeSuite() {
       setState(state => {
-        state.suit = state.isVip ? 'Presidential Suite' : 'Executive Suite';
-        return state;
+        state.suit = state.isVip ? 'Presidential Suite' : 'Executive Suite'
+        return state
       })
     }
   }
@@ -58,13 +58,13 @@ Use this option for flat pure object states.
 ```ts
 const getMethods = (setState: SetStateFn<GuestDetailsType>) => ({
   updateName(firstName: string, lastName?: string) {
-    setState({ name: `${firstName}${lastName ? ' ' + lastName : ''}` });
+    setState({ name: `${firstName}${lastName ? ' ' + lastName : ''}` })
   }
 })
 ```
 There are two gothcas to be aware of:
-2. Muestate will only apply partial state update (Object spread) for plain objects. Do not use partial updates for non-pure object states. It will break the store state.
-1. If the state has nested shape objects, callback state update option would provide better flexibility.
+1. Muestate will only apply partial state update (Object spread) for plain objects. Do not use partial updates for non-pure object states. It will break the store state.
+2. If the state has nested shape objects, callback state update option would provide better flexibility.
 
 ## Provide callback function
 This options allows the store method to access the current state value. The return of the callback function must be the full next state value. Typically, we would dwell into object spread hell:
@@ -83,8 +83,8 @@ But we dont have to. As long as the full state is returned from the callback, Mu
 const getMethods = (setState: SetStateFn<GuestDetailsType>) => ({
   upgradeSuite() {
     setState(state => {
-      state.suit = state.isVip ? 'Presidential Suite' : 'Executive Suite';
-      return state;
+      state.suit = state.isVip ? 'Presidential Suite' : 'Executive Suite'
+      return state
     })
   }
 })
