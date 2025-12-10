@@ -1,8 +1,10 @@
 ---
 sidebar_position: 1
+title: Setup store methods
+sidebar_label: 🍔 Setup store methods
 ---
 
-# Setup store methods
+# 🍔 Setup store methods
 Muestate store methods are created using a factory function. This factory function recieves the `setState` and `notifyNow` function as arguments. We will explore `notifyNow` in async store methods. The `setState` allows state updates in multiple ways.
 
 ```ts
@@ -35,7 +37,7 @@ const getMethods = (
 }
 ```
 
-## Provide next state
+## 🥩 Provide next state
 This is the simplest option. Provide the next (full) value for the state.
 ```ts
 const getMethods = (setState: SetStateFn<GuestDetailsType>) => ({
@@ -53,7 +55,7 @@ const getMethods = (setState: SetStateFn<number>) => ({
 })
 ```
 
-## Provide partial state
+## 🧀 Provide partial state
 Use this option for flat pure object states.
 ```ts
 const getMethods = (setState: SetStateFn<GuestDetailsType>) => ({
@@ -66,7 +68,7 @@ There are two gothcas to be aware of:
 1. Muestate will only apply partial state update (Object spread) for plain objects. Do not use partial updates for non-pure object states. It will break the store state.
 2. If the state has nested shape objects, callback state update option would provide better flexibility.
 
-## Provide callback function
+## 🥓 Provide callback function
 This options allows the store method to access the current state value. The return of the callback function must be the full next state value. Typically, we would dwell into object spread hell:
 ```ts
 const getMethods = (setState: SetStateFn<GuestDetailsType>) => ({

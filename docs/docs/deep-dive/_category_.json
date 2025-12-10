@@ -1,6 +1,7 @@
 {
   "label": "Deep dive Muestate",
   "position": 6,
+  "collapsed": true,
   "link": {
     "type": "generated-index",
     "description": "5 minutes to learn the most important Docusaurus concepts."

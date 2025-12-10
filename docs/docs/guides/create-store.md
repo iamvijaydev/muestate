@@ -1,8 +1,10 @@
 ---
 sidebar_position: 2
+title: Create store
+sidebar_label: 🥗 Create store
 ---
 
-# Create store
+# 🥗 Create store
 The `createStore` utility from Muestate creates a Context and two Hooks. The `Provider` Component instanciates the store singleton and the React Context. The React Context holds the value of the store singleton. Two React Hooks `useStore` & `useState` are for accessing the state and methods of the store. These Hooks can be accessed anywhere under the Context.
 ```ts {15-22}
 export type TodoState = Map<string, {
@@ -29,7 +31,7 @@ export const [
 ] = createStore(initialState, makeMethods)
 ```
 
-## Namming convention
+## 🍓 Namming convention
 The Muestate utilty, `createStore` returns array of values. You can name the Hooks and Provider to align it with the current store. For e.g.:
 ```ts {2-4}
 export const [
@@ -39,11 +41,22 @@ export const [
 ] = createStore(initialState, makeMethods)
 ```
 
-## Where to place `Provider`
+## 🍒 Where to place `Provider`
 The Provider must wrap all the pages and components that will access `useStore` and `useStore`. 
-```tsx {6,11}
-// feature/projection/page/editor/ProjectionEditor.tsx
+```tsx {5,7} title="TodoPage.tsx"
+import { TodoProvider } from '@/feature/todo/store.ts'
+import { TodoApp } from './feature/TodoApp.tsx'
 ...
+return (
+  <TodoProvider>
+    <TodoApp />
+  </TodoProvider>
+)
+```
+
+## 🍇 Multiple providers
+In a large application, you may have multiple stores. Each store will have its own Provider. You can nest the Providers to make the stores available to the components that need them.
+```tsx {2-4,9-11} title="ProjectionEditorPage.tsx"
 return (
   <ProductListProvider>
     <AutoSaveProvider>
@@ -56,9 +69,10 @@ return (
     </AutoSaveProvider>
   </ProductListProvider>
 )
-
-// feature/projection/page/editor/feature/DragAndDropEditor.tsx
+```
+```tsx title="DragAndDropEditor.tsx"
 ...
-const store = useProjectionEditorStore()
+const productStore = useProductListStore()
+const editorStore = useProjectionEditorStore()
 const tierList = useProjectionEditorState(state => Array.from(state.tierList))
 ```
