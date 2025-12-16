@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { StateComparatorFn, StateSelectorFn, StoreInternals } from "../types";
+import type { StateComparatorFn, StateSelectorFn, StoreInternals } from "../mutableStore/types";
 
 export const useReactiveState = <StateType, ReactiveStateType>(
   store: StoreInternals<StateType>,

@@ -31,6 +31,16 @@
       "import": "./dist/esm/utils/useReactiveState.js",
       "require": "./dist/cjs/utils/useReactiveState.js",
       "types": "./dist/types/utils/useReactiveState.d.ts"
+    },
+    "./mutableStore/createStore": {
+      "import": "./dist/esm/mutableStore/createStore.js",
+      "require": "./dist/cjs/mutableStore/createStore.js",
+      "types": "./dist/types/mutableStore/createStore.d.ts"
+    },
+    "./reactiveStore/createStore": {
+      "import": "./dist/esm/reactiveStore/createStore.js",
+      "require": "./dist/cjs/reactiveStore/createStore.js",
+      "types": "./dist/types/reactiveStore/createStore.d.ts"
     }
   },
   "files": [
