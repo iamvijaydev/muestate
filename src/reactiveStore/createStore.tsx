@@ -2,12 +2,11 @@ import React, {
   createContext,
   PropsWithChildren,
   JSX,
-  useContext,
   useMemo,
   useState,
 } from "react";
 
-import { DeepPartial, AllowedStateTypes } from "@/types";
+import type { DeepPartial, AllowedStateTypes } from "@/types";
 import type {
   ContextStore,
   CreateStoreArgs,
@@ -15,7 +14,7 @@ import type {
   StoreInstance,
   UseStore,
   UseStoreContext,
-} from "./types";
+} from "@/reactiveStore/types";
 import { useDefinedContext } from "@/utils/useDefinedContext";
 
 export function createStore<

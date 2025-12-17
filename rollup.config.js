@@ -1,4 +1,5 @@
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import terser from '@rollup/plugin-terser';
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
@@ -6,26 +7,29 @@ import typescript from "@rollup/plugin-typescript";
 export default {
   input: {
     index: "src/index.ts",
+    utils: "src/utils.ts",
+    "mutableStore/createStore": "src/mutableStore/createStore.tsx",
+    "reactiveStore/createStore": "src/reactiveStore/createStore.tsx",
     "utils/useDefinedContext": "src/utils/useDefinedContext.ts",
-    "utils/useMutableState": "src/utils/useMutableState.ts",
-    "utils/useMutableSubscription": "src/utils/useMutableSubscription.ts",
-    "utils/useReactiveState": "src/utils/useReactiveState.ts",
+    "utils/useMutableState": "src/mutableStore/utils/useMutableState.ts",
+    "utils/useMutableSubscription": "src/mutableStore/utils/useMutableSubscription.ts",
+    "utils/useReactiveState": "src/mutableStore/utils/useReactiveState.ts",
   },
   output: [
     {
       dir: "dist/esm",
       format: "esm",
-      sourcemap: true,
+      sourcemap: false,
       preserveModules: true,
       preserveModulesRoot: "src",
     },
     {
       dir: "dist/cjs",
       format: "cjs",
-      sourcemap: true,
+      sourcemap: false,
       preserveModules: true,
       preserveModulesRoot: "src",
-    },
+    }
   ],
   plugins: [
     peerDepsExternal(),
@@ -35,5 +39,6 @@ export default {
       tsconfig: "./tsconfig.json",
       declaration: false,
     }),
+    terser()
   ],
 };

@@ -1,9 +1,9 @@
 import React, { createContext, PropsWithChildren, JSX } from "react";
 
 import { useDefinedContext } from "@/utils/useDefinedContext";
-import { useReactiveState } from "@/utils/useReactiveState";
-import { useMutableState } from "@/utils/useMutableState";
-import { useMutableSubscription } from "@/utils/useMutableSubscription";
+import { useReactiveState } from "@/mutableStore/utils/useReactiveState";
+import { useMutableState } from "@/mutableStore/utils/useMutableState";
+import { useMutableSubscription } from "@/mutableStore/utils/useMutableSubscription";
 import type {
   HelperInstanceType,
   CreateStoreArgs,
@@ -13,7 +13,7 @@ import type {
   StoreInstance,
   StateSelectorFn,
   StateComparatorFn,
-} from "./types";
+} from "@/mutableStore/types";
 import type { DeepPartial, AllowedStateTypes } from "@/types";
 
 export function createStore<

@@ -1,6 +1,6 @@
 import { RefObject, useRef } from "react";
-import { isPlainObject } from "./isPlainObject";
-import type { GetStateFn, SetStateFn } from "./types";
+import { isPlainObject } from "@/utils/isPlainObject";
+import type { GetStateFn, SetStateFn } from "@/mutableStore/utils/types";
 
 export const useMutableState = <StateType>(
   initialState: StateType

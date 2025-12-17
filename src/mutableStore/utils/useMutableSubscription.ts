@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import type { NotifyFn, ObserverFn, SubscribeFn } from "./types";
+import type { NotifyFn, ObserverFn, SubscribeFn } from "@/mutableStore/utils/types";
 
 export const useMutableSubscription = <StateType>(): [
   SubscribeFn<StateType>,

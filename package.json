@@ -10,7 +10,13 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
+      "umd": "./dist/umd/muestate.js",
       "types": "./dist/types/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/esm/utils.js",
+      "require": "./dist/cjs/utils.js",
+      "types": "./dist/types/utils.d.ts"
     },
     "./utils/useDefinedContext": {
       "import": "./dist/esm/utils/useDefinedContext.js",
@@ -32,12 +38,12 @@
       "require": "./dist/cjs/utils/useReactiveState.js",
       "types": "./dist/types/utils/useReactiveState.d.ts"
     },
-    "./mutableStore/createStore": {
+    "./mutableStore": {
       "import": "./dist/esm/mutableStore/createStore.js",
       "require": "./dist/cjs/mutableStore/createStore.js",
       "types": "./dist/types/mutableStore/createStore.d.ts"
     },
-    "./reactiveStore/createStore": {
+    "./reactiveStore": {
       "import": "./dist/esm/reactiveStore/createStore.js",
       "require": "./dist/cjs/reactiveStore/createStore.js",
       "types": "./dist/types/reactiveStore/createStore.d.ts"
@@ -52,8 +58,11 @@
   "keywords": [
     "react",
     "context",
+    "store",
     "mutable",
-    "store"
+    "mutable state",
+    "reactive store",
+    "mutable store"
   ],
   "author": "Vijay Dev",
   "license": "ISC",
@@ -64,8 +73,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "build:code": "rollup -c",
+    "build:udm": "rollup -c rollup.config.udm.js",
     "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types",
-    "build": "npm run clean && npm run build:code && npm run build:types"
+    "build": "npm run clean && npm run build:code && npm run build:types && npm run build:udm"
   },
   "peerDependencies": {
     "react": "^18.3.1"
@@ -73,6 +83,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/react": "^19.1.4",
     "prettier": "3.6.2",

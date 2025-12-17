@@ -1,15 +1,15 @@
-export type { DeepPartial, AllowedStateTypes } from "./types";
-
+export type { DeepPartial, AllowedStateTypes } from "@/types";
+export { isPlainObject } from "@/utils/isPlainObject";
 export { useDefinedContext } from "@/utils/useDefinedContext";
-export { useMutableState } from "@/utils/useMutableState";
-export { useMutableSubscription } from "@/utils/useMutableSubscription";
-export { useReactiveState } from "@/utils/useReactiveState";
 
 export type {
   HelperInstanceType as MutableHelperInstanceType,
   MakeStoreState as MutableMakeStoreState,
 } from "@/mutableStore/types";
 export { createStore as createMutableStore } from "@/mutableStore/createStore";
+export { useMutableState } from "@/mutableStore/utils/useMutableState";
+export { useMutableSubscription } from "@/mutableStore/utils/useMutableSubscription";
+export { useReactiveState } from "@/mutableStore/utils/useReactiveState";
 
 export type {
   HelperInstanceType as ReactiveHelperInstanceType,
@@ -17,16 +17,3 @@ export type {
 } from "@/reactiveStore/types";
 export { createStore as createReactiveStore } from "@/reactiveStore/createStore";
 
-// export type {
-//   GetStateFn,
-//   SetStateFn,
-//   ObserverFn,
-//   UnSubscribeFn,
-//   SubscribeFn,
-//   NotifyFn,
-//   NotifyNowFn,
-//   MakeStoreMethods,
-//   StoreInternals,
-//   StateSelectorFn,
-//   StateComparatorFn,
-// } from "./mutablestore/types";

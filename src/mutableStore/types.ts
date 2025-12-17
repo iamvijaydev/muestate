@@ -6,7 +6,7 @@ import type {
   SubscribeFn,
   NotifyFn,
   NotifyNowFn,
-} from "@/utils/types";
+} from "@/mutableStore/utils/types";
 
 export type HelperInstanceType<
   StateType extends AllowedStateTypes,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { StateComparatorFn, StateSelectorFn, StoreInternals } from "../mutableStore/types";
+import type { StateComparatorFn, StateSelectorFn, StoreInternals } from "@/mutableStore/types";
 
 export const useReactiveState = <StateType, ReactiveStateType>(
   store: StoreInternals<StateType>,
@@ -15,7 +15,7 @@ export const useReactiveState = <StateType, ReactiveStateType>(
   const comparator = rawComparator ?? defaultComparator;
 
   const [state, setState] = useState<ReactiveStateType>(
-    selector(store.internals.getState())
+    selector(store.$internals.getState())
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const useReactiveState = <StateType, ReactiveStateType>(
         setState(next);
       }
     };
-    const unsubscribe = store.internals.subscribe(onUpdate);
+    const unsubscribe = store.$internals.subscribe(onUpdate);
 
     return () => {
       alive = false;
